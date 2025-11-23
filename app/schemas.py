@@ -45,3 +45,15 @@ class TicketOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+class ScanRequest(BaseModel):
+    token: str
+
+
+class ScanResult(BaseModel):
+    valid: bool          # True si le ticket est accepté
+    reason: Optional[str] = None  # ex: "ticket_not_found", "already_scanned"
+    user_email: Optional[EmailStr] = None
+    user_name: Optional[str] = None
+    event_id: Optional[int] = None
+    status: Optional[str] = None   # UNUSED / SCANNED / CANCELED etc.
