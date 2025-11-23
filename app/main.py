@@ -16,16 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 1) Ping simple pour savoir si le serveur est vivant
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-# 2) Exemple de route "hello"
-@app.get("/hello")
-def hello(name: str = "world"):
-    return {"message": f"Hello {name}!"}
-
 app.include_router(auth.router)
 app.include_router(events.router)
 app.include_router(tickets.router)
