@@ -3,22 +3,37 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app import models, schemas
+from app.deps import get_current_user
 
 router = APIRouter(prefix="/events", tags=["events"])
 
 
 @router.post("/", response_model=schemas.EventOut)
-def create_event(event_in: schemas.EventCreate, db: Session = Depends(get_db)):
+def create_event(
+    event_in: schemas.EventCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     event = models.Event(
         name=event_in.name,
         description=event_in.description,
         date=event_in.date,
         location=event_in.location,
-        created_by_id=None,  # on branchera l'auth plus tard
+        created_by_id=current_user.id,
     )
     db.add(event)
     db.commit()
     db.refresh(event)
+
+    # le créateur devient OWNER
+    rel = models.EventAdmin(
+        event_id=event.id,
+        user_id=current_user.id,
+        role="OWNER",
+    )
+    db.add(rel)
+    db.commit()
+
     return event
 
 
@@ -34,3 +49,4 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
     if not event:
         raise HTTPException(status_code=404, detail="Event non trouvé")
     return event
+

@@ -3,6 +3,28 @@ from datetime import datetime
 from typing import List, Optional
 
 # ==========================
+# USERS / AUTH
+# ==========================
+
+class UserBase(BaseModel):
+    email: EmailStr
+    name: Optional[str] = None
+
+class UserCreate(UserBase):
+    password: str
+
+class UserOut(UserBase):
+    id: int
+    is_superadmin: bool
+
+    class Config:
+        orm_mode = True  # warning Pydantic v2 mais ça marche
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+# ==========================
 # ÉVÉNEMENTS
 # ==========================
 
