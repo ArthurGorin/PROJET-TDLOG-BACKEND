@@ -111,3 +111,25 @@ def search_students(
     )
 
 
+@router.post("/external", response_model=schemas.Student)
+def create_external_student(
+    student: schemas.StudentCreate,
+    db: Session = Depends(get_db),
+):
+    # éviter les doublons d’email
+    existing = db.query(models.Student).filter(
+        models.Student.email == student.email
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email déjà enregistré")
+
+    db_student = models.Student(
+        first_name=student.first_name,
+        last_name=student.last_name,
+        email=student.email,
+        is_external=True,  # 👈 ici on force externe
+    )
+    db.add(db_student)
+    db.commit()
+    db.refresh(db_student)
+    return db_student
