@@ -79,3 +79,22 @@ class ScanResult(BaseModel):
     user_name: Optional[str] = None
     event_id: Optional[int] = None
     status: Optional[str] = None   # UNUSED / SCANNED / CANCELED etc.
+
+# ==========================
+# STUDENTS 
+# ==========================
+
+class StudentBase(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    is_external: bool = False
+
+class StudentCreate(StudentBase):
+    pass
+
+class Student(StudentBase):
+    id: int
+
+    class Config:
+        orm_mode = True

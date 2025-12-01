@@ -36,3 +36,12 @@ class Ticket(Base):
     qr_code_token = Column(String, unique=True, index=True)
     status = Column(String, default='UNUSED')
     scanned_at = Column(DateTime)
+
+class Student(Base):
+    __tablename__ = "students"
+
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    is_external = Column(Boolean, default=False)
