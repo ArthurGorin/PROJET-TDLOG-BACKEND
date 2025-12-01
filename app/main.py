@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routers import auth, events, tickets, scan, admin
+from .routers import auth, events, tickets, scan, admin, students
 from .db import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
