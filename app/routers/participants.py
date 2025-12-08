@@ -70,6 +70,17 @@ def create_participant(
     db.add(participant)
     db.commit()
     db.refresh(participant)
+
+    ticket = models.Ticket(
+        event_id=event_id,
+        user_email=participant.email or "",
+        user_name=f"{participant.first_name} {participant.last_name}".strip(),
+        qr_code_token=participant.qr_code,
+        status="UNUSED",
+    )
+    db.add(ticket)
+    db.commit()
+
     return participant
 
 
@@ -89,6 +100,17 @@ def update_participant(
 
     db.commit()
     db.refresh(participant)
+
+    ticket = (
+        db.query(models.Ticket)
+        .filter(models.Ticket.qr_code_token == participant.qr_code)
+        .first()
+    )
+    if ticket:
+        ticket.user_email = participant.email or ""
+        ticket.user_name = f"{participant.first_name} {participant.last_name}".strip()
+        db.commit()
+
     return participant
 
 
@@ -101,5 +123,12 @@ def delete_participant(
 ):
     _get_event_or_404(event_id, db)
     participant = _get_participant_or_404(event_id, participant_id, db)
+    ticket = (
+        db.query(models.Ticket)
+        .filter(models.Ticket.qr_code_token == participant.qr_code)
+        .first()
+    )
     db.delete(participant)
+    if ticket:
+        db.delete(ticket)
     db.commit()
