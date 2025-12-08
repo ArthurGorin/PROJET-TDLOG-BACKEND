@@ -98,3 +98,36 @@ class Student(StudentBase):
 
     class Config:
         orm_mode = True
+
+
+# ==========================
+# PARTICIPANTS
+# ==========================
+
+class ParticipantBase(BaseModel):
+    first_name: str
+    last_name: str
+    promo: Optional[str] = None
+    email: Optional[str] = None
+    tarif: Optional[str] = None
+
+
+class ParticipantCreate(ParticipantBase):
+    pass
+
+
+class ParticipantUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    promo: Optional[str] = None
+    email: Optional[str] = None
+    tarif: Optional[str] = None
+
+
+class ParticipantOut(ParticipantBase):
+    id: int
+    event_id: int
+    qr_code: str
+
+    class Config:
+        orm_mode = True

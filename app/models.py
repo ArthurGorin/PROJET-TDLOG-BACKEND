@@ -45,3 +45,17 @@ class Student(Base):
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     is_external = Column(Boolean, default=False)
+
+
+class Participant(Base):
+    __tablename__ = "participants"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("events.id"), nullable=False, index=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    promo = Column(String, nullable=True)
+    email = Column(String, nullable=True)
+    tarif = Column(String, nullable=True)
+    qr_code = Column(String, unique=True, index=True, nullable=False)
+    event = relationship("Event", backref="participants")
