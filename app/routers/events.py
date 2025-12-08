@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -50,3 +50,19 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event non trouvé")
     return event
 
+
+@router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_event(
+    event_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    event = db.query(models.Event).filter(models.Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event non trouvé")
+
+    if event.created_by_id != current_user.id and not current_user.is_superadmin:
+        raise HTTPException(status_code=403, detail="Accès refusé")
+
+    db.delete(event)
+    db.commit()
