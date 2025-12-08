@@ -48,11 +48,10 @@ def login(
             detail="Email ou mot de passe incorrect",
         )
 
-    access_token = create_access_token(data={"sub": user.id})
+    access_token = create_access_token(data={"sub": str(user.id)})
     return schemas.Token(access_token=access_token)
 
 
 @router.get("/me", response_model=schemas.UserOut)
 def read_me(current_user: models.User = Depends(get_current_user)):
     return current_user
-
