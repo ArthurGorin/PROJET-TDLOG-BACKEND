@@ -15,6 +15,31 @@ def generate_ticket_token() -> str:
     return secrets.token_urlsafe(16)
 
 
+@router.post("/", response_model=schemas.TicketOut)
+def create_ticket(
+    event_id: int,
+    data: schemas.TicketCreate,
+    db: Session = Depends(get_db),
+):
+    event = db.query(models.Event).filter(models.Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event non trouvé")
+
+    ticket = models.Ticket(
+        event_id=event_id,
+        user_email=data.user_email,
+        user_name=data.user_name,
+        qr_code_token=generate_ticket_token(),
+        status="UNUSED",
+        scanned_at=None,
+    )
+
+    db.add(ticket)
+    db.commit()
+    db.refresh(ticket)
+    return ticket
+
+
 @router.post("/bulk", response_model=list[schemas.TicketOut])
 def create_tickets_bulk(
     event_id: int,

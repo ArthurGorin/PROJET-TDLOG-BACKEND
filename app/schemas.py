@@ -62,6 +62,7 @@ class TicketOut(BaseModel):
     event_id: int
     user_email: EmailStr
     user_name: str
+    qr_code_token: str
     status: str
     scanned_at: Optional[datetime] = None
 
