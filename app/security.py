@@ -5,7 +5,7 @@ from jose import jwt, JWTError
 from passlib.context import CryptContext
 
 # Clé secrète JWT (à changer en prod)
-SECRET_KEY = "CHANGE_ME_PLEASE_SUPER_SECRET_KEY"
+SECRET_KEY = "CHANGE_ME"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24h
 
