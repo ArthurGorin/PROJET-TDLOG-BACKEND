@@ -8,7 +8,7 @@ from . import models
 from .security import hash_password
 
 
-@contextmanager
+@contextmanager #creation d'une session sqlalchemy temporaire independante de fastapi
 def _session_scope():
     db: Session = SessionLocal()
     try:
