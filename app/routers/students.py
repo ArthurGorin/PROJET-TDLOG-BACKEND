@@ -86,11 +86,11 @@ def search_students(
     db: Session = Depends(get_db),
 ):
     if not q:
-        # on limite à 20 premiers si q vide
+        # on limite à 8 élèves si la saisie q est vide  
         return (
             db.query(models.Student)
             .order_by(models.Student.last_name)
-            .limit(20)
+            .limit(8)
             .all()
         )
 
@@ -105,11 +105,11 @@ def search_students(
             )
         )
         .order_by(models.Student.last_name)
-        .limit(20)
+        .limit(8)
         .all()
     )
 
-
+#créer un étudiant externe
 @router.post("/external", response_model=schemas.Student)
 def create_external_student(
     student: schemas.StudentCreate,
@@ -126,7 +126,7 @@ def create_external_student(
         first_name=student.first_name,
         last_name=student.last_name,
         email=student.email,
-        is_external=True,  # 👈 ici on force externe
+        is_external=True,  # ici on force externe
     )
     db.add(db_student)
     db.commit()
