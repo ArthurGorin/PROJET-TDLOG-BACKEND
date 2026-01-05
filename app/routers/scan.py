@@ -66,13 +66,14 @@ def scan_ticket(
         status=ticket.status,
     )
 
+
+# On renvoie tout brut pour debug et voir les qr-code
 @router.get("/debug_raw", tags=["tickets-debug"])
 def list_raw_tickets(
     event_id: int,
     db: Session = Depends(get_db),
 ):
     tickets = db.query(models.Ticket).filter(models.Ticket.event_id == event_id).all()
-    # On renvoie tout brut pour debug (à ne pas garder en prod)
     return [
         {
             "id": t.id,
