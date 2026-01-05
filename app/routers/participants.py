@@ -17,6 +17,31 @@ def _get_event_or_404(event_id: int, db: Session) -> models.Event:
     return event
 
 
+def _check_user_can_manage_participants(
+    event_id: int,
+    current_user: models.User,
+    db: Session,
+):
+    """Autorise uniquement les superadmins ou les OWNER de l'événement."""
+    if current_user.is_superadmin:
+        return
+
+    rel = (
+        db.query(models.EventAdmin)
+        .filter(
+            models.EventAdmin.event_id == event_id,
+            models.EventAdmin.user_id == current_user.id,
+            models.EventAdmin.role == "OWNER",
+        )
+        .first()
+    )
+    if rel is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès refusé : admin de l'événement requis",
+        )
+
+
 def _get_participant_or_404(event_id: int, participant_id: int, db: Session) -> models.Participant:
     participant = (
         db.query(models.Participant)
@@ -60,6 +85,7 @@ def list_participants(
     current_user: models.User = Depends(get_current_user),
 ):
     _get_event_or_404(event_id, db)
+    _check_user_can_manage_participants(event_id, current_user, db)
     participants = (
         db.query(models.Participant)
         .filter(models.Participant.event_id == event_id)
@@ -127,6 +153,7 @@ def update_participant(
     current_user: models.User = Depends(get_current_user),
 ):
     _get_event_or_404(event_id, db)
+    _check_user_can_manage_participants(event_id, current_user, db)
     participant = _get_participant_or_404(event_id, participant_id, db)
 
     for field, value in participant_in.dict(exclude_unset=True).items():
@@ -156,6 +183,7 @@ def delete_participant(
     current_user: models.User = Depends(get_current_user),
 ):
     _get_event_or_404(event_id, db)
+    _check_user_can_manage_participants(event_id, current_user, db)
     participant = _get_participant_or_404(event_id, participant_id, db)
     ticket = (
         db.query(models.Ticket)
