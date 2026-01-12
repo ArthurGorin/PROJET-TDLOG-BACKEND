@@ -1,3 +1,4 @@
+import logging
 import os
 import smtplib
 from datetime import datetime
@@ -77,6 +78,11 @@ def send_participant_qr_email(
 ) -> None:
     settings = load_email_settings()
     if settings is None or not participant.email:
+        logging.warning(
+            "Email ignored (missing settings or participant email) event_id=%s participant_id=%s",
+            getattr(event, "id", None),
+            getattr(participant, "id", None),
+        )
         return
 
     date_str = _format_event_date(event.date)
@@ -119,7 +125,22 @@ def send_participant_qr_email(
     attachment.add_header("Content-Disposition", "attachment", filename="qr_code.png")
     msg.attach(attachment)
 
-    with smtplib.SMTP(settings.host, settings.port) as server:
-        server.starttls()
-        server.login(settings.username, settings.password)
-        server.send_message(msg)
+    try:
+        with smtplib.SMTP(settings.host, settings.port) as server:
+            server.starttls()
+            server.login(settings.username, settings.password)
+            server.send_message(msg)
+        logging.info(
+            "Email sent event_id=%s participant_id=%s to=%s",
+            getattr(event, "id", None),
+            getattr(participant, "id", None),
+            participant.email,
+        )
+    except Exception as exc:
+        logging.exception(
+            "Email send failed event_id=%s participant_id=%s to=%s error=%s",
+            getattr(event, "id", None),
+            getattr(participant, "id", None),
+            participant.email,
+            exc,
+        )
