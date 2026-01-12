@@ -4,7 +4,6 @@ from datetime import datetime
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.header import Header
 from io import BytesIO
 from typing import Optional
 
@@ -37,7 +36,7 @@ def load_email_settings() -> Optional[EmailSettings]:
     username = os.getenv("EMAIL_USER")
     password = os.getenv("EMAIL_PASSWORD")
     from_email = os.getenv("EMAIL_FROM", username or "")
-    from_name = os.getenv("EMAIL_FROM_NAME", "TDLOG Events")
+    from_name = os.getenv("EMAIL_FROM_NAME", "Events ENPC")
 
     if not username or not password or not from_email:
         return None
@@ -106,7 +105,7 @@ def send_participant_qr_email(
     """
 
     msg = MIMEMultipart("related")
-    msg["Subject"] = str(Header(subject, "utf-8"))
+    msg["Subject"] = subject
     msg["From"] = f"{settings.from_name} <{settings.from_email}>"
     msg["To"] = participant.email
 
