@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 import secrets
 from typing import Dict, Optional
@@ -6,6 +6,7 @@ from typing import Dict, Optional
 from app.db import get_db
 from app import models, schemas
 from app.deps import get_current_user
+from app.email_utils import send_participant_qr_email
 
 router = APIRouter(prefix="/events/{event_id}/participants", tags=["participants"])
 
@@ -112,10 +113,11 @@ def list_participants(
 def create_participant(
     event_id: int,
     participant_in: schemas.ParticipantCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    _get_event_or_404(event_id, db)
+    event = _get_event_or_404(event_id, db)
 
     participant = models.Participant(
         event_id=event_id,
@@ -140,6 +142,14 @@ def create_participant(
     db.add(ticket)
     db.commit()
     db.refresh(ticket)
+
+    if participant.email:
+        background_tasks.add_task(
+            send_participant_qr_email,
+            event,
+            participant,
+            participant.qr_code,
+        )
 
     return _participant_to_out(participant, ticket)
 
@@ -194,3 +204,27 @@ def delete_participant(
     if ticket:
         db.delete(ticket)
     db.commit()
+
+
+@router.post("/{participant_id}/send-email")
+def send_participant_email(
+    event_id: int,
+    participant_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    event = _get_event_or_404(event_id, db)
+    _check_user_can_manage_participants(event_id, current_user, db)
+    participant = _get_participant_or_404(event_id, participant_id, db)
+
+    if not participant.email:
+        raise HTTPException(status_code=400, detail="Participant sans email")
+
+    background_tasks.add_task(
+        send_participant_qr_email,
+        event,
+        participant,
+        participant.qr_code,
+    )
+    return {"status": "queued"}

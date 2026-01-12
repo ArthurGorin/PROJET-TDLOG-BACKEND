@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 tdlog.db
 .DS_Store
+.env
