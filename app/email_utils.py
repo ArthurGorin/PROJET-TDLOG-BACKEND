@@ -98,7 +98,7 @@ def send_participant_qr_email(
           Voici votre QR code pour l'evenement
           "<strong>{event.name}</strong>" le {date_str} a {event.location}.
         </p>
-        <p><img src="cid:qr_code" alt="QR code" /></p>
+        <p>Le QR code est en piece jointe (qr_code.png).</p>
         <p>Merci et a bientot.</p>
       </body>
     </html>
@@ -115,10 +115,9 @@ def send_participant_qr_email(
     msg.attach(alternative)
 
     qr_bytes = _build_qr_image_bytes(qr_token)
-    image = MIMEImage(qr_bytes, _subtype="png")
-    image.add_header("Content-ID", "<qr_code>")
-    image.add_header("Content-Disposition", "inline", filename="qr_code.png")
-    msg.attach(image)
+    attachment = MIMEImage(qr_bytes, _subtype="png")
+    attachment.add_header("Content-Disposition", "attachment", filename="qr_code.png")
+    msg.attach(attachment)
 
     with smtplib.SMTP(settings.host, settings.port) as server:
         server.starttls()
