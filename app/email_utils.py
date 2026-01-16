@@ -109,7 +109,7 @@ def send_participant_qr_email(
       </body>
     </html>
     """
-
+    #le client mail choisit la version
     msg = MIMEMultipart("related")
     msg["Subject"] = subject
     msg["From"] = f"{settings.from_name} <{settings.from_email}>"
@@ -120,11 +120,13 @@ def send_participant_qr_email(
     alternative.attach(MIMEText(html_body, "html", "utf-8"))
     msg.attach(alternative)
 
+    #ajout de la pièce jointe
     qr_bytes = _build_qr_image_bytes(qr_token)
     attachment = MIMEImage(qr_bytes, _subtype="png")
     attachment.add_header("Content-Disposition", "attachment", filename="qr_code.png")
     msg.attach(attachment)
 
+    #envoie SMTP
     try:
         with smtplib.SMTP(settings.host, settings.port) as server:
             server.starttls()
