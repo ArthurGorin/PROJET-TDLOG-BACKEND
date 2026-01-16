@@ -29,7 +29,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # en dev : on autorise tout, on durcira plus tard si besoin
     allow_credentials=True,
-    allow_methods=["*"],   # <- très important pour accepter OPTIONS
+    allow_methods=["*"],   
     allow_headers=["*"],
 )
 
