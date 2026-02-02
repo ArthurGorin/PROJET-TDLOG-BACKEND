@@ -15,7 +15,7 @@ def scan_ticket(
 ):
     token = payload.token
 
-    # 1) On cherche le ticket qui correspond au token
+    # On cherche le ticket qui correspond au token
     ticket = (
         db.query(models.Ticket)
         .filter(models.Ticket.qr_code_token == token)
@@ -29,7 +29,7 @@ def scan_ticket(
             reason="ticket_not_found",
         )
 
-    # 2) Si déjà scanné
+    # Si déjà scanné
     if ticket.status == "SCANNED":
         return schemas.ScanResult(
             valid=False,
@@ -40,7 +40,7 @@ def scan_ticket(
             status=ticket.status,
         )
 
-    # 3) Si dans un autre état que UNUSED (ex: CANCELED)
+    # Si dans un autre état que UNUSED (ex: CANCELED)
     if ticket.status != "UNUSED":
         return schemas.ScanResult(
             valid=False,

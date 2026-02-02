@@ -21,7 +21,7 @@ def signup(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
         email=user_in.email,
         name=user_in.name,
         hashed_password=hash_password(user_in.password),
-        is_superadmin=False,  # à éditer à la main en BDD si besoin
+        is_superadmin=False,  
     )
     db.add(user)
     db.commit()

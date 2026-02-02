@@ -7,7 +7,7 @@ from app.db import get_db
 from app import models, schemas
 from app.security import ALGORITHM, SECRET_KEY
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login") #l'authentificatin ce fait par un token qui vient de post /auth/login
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login") #l'authentificatin se fait par un token qui vient de post /auth/login
 
 
 def get_user_by_id(user_id: int, db: Session) -> models.User | None:

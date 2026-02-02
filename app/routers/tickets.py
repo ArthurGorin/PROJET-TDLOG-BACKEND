@@ -9,7 +9,7 @@ from app import models, schemas
 
 router = APIRouter(prefix="/events/{event_id}/tickets", tags=["tickets"])
 
-#les deux fonctions de créations ne servent pas dans le front end, c'est si jamais on veut créer des tickets indépendamment d'un participants
+#les deux fonctions de créations ne servent pas dans le front end, c'est si jamais on veut créer des tickets indépendamment d'un participant
 def generate_ticket_token() -> str:
     """Génère un token aléatoire pour le ticket (ce sera ce qu'on mettra dans le QR code)"""
     return secrets.token_urlsafe(16)

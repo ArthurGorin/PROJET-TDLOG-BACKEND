@@ -2,9 +2,6 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import List, Optional
 
-# ==========================
-# USERS / AUTH
-# ==========================
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -24,10 +21,6 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
-# ==========================
-# ÉVÉNEMENTS
-# ==========================
-
 class EventBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -45,10 +38,6 @@ class EventOut(EventBase):
     class Config:
         orm_mode = True  # permet de retourner des objets SQLAlchemy
 
-
-# ==========================
-# TICKETS
-# ==========================
 
 class TicketCreate(BaseModel):
     user_email: EmailStr
@@ -75,15 +64,13 @@ class ScanRequest(BaseModel):
 
 class ScanResult(BaseModel):
     valid: bool          # True si le ticket est accepté
-    reason: Optional[str] = None  # ex: "ticket_not_found", "already_scanned"
+    reason: Optional[str] = None  
     user_email: Optional[str] = None
     user_name: Optional[str] = None
     event_id: Optional[int] = None
     status: Optional[str] = None   # UNUSED / SCANNED / CANCELED etc.
 
-# ==========================
-# STUDENTS 
-# ==========================
+
 
 class StudentBase(BaseModel):
     first_name: str
@@ -100,10 +87,6 @@ class Student(StudentBase):
     class Config:
         orm_mode = True
 
-
-# ==========================
-# PARTICIPANTS
-# ==========================
 
 class ParticipantBase(BaseModel):
     first_name: str
