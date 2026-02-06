@@ -1,1 +1,1 @@
-Voir le readme du frontend
+Look at the readme of the frontend
